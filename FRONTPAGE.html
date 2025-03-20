@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gourmet Haven</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1c20 0%, #2d3436 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/api/placeholder/1200/400');
+            background-size: cover;
+            background-position: center;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            animation: slideDown 1s ease;
+        }
+
+        .header-content p {
+            font-size: 1.2rem;
+            animation: fadeIn 1.5s ease;
+        }
+
+        nav {
+            background: rgba(0,0,0,0.8);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.8rem; /* Updated from 1.1rem to 1.8rem */
+            transition: color 0.3s;
+            font-weight: bold; /* Added to make text more prominent */
+        }
+
+        nav a:hover {
+            color: #ffd700;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .menu-item {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .menu-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .menu-item-content {
+            padding: 1.5rem;
+        }
+
+        .menu-item h3 {
+            margin-bottom: 0.5rem;
+            color: #ffd700;
+        }
+
+        .menu-item p {
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .price {
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .add-to-cart {
+            background: #ffd700;
+            color: #000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background: #ffed4a;
+        }
+
+        .cart {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: rgba(0,0,0,0.95);
+            padding: 2rem;
+            transition: right 0.3s;
+            z-index: 1000;
+        }
+
+        .cart.open {
+            right: 0;
+        }
+
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .cart-items {
+            max-height: calc(100vh - 250px);
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+
+        .cart-total {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .section-title {
+            text-align: center;
+            padding: 2rem 0;
+            font-size: 2.5rem;
+            color: #ffd700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 2rem;
+            animation: fadeIn 1s ease;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: #ffd700;
+            margin: 1rem auto;
+        }
+
+        .popup {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            max-width: 400px;
+            color: #000;
+            animation: scaleIn 0.3s ease;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: #fff;
+            font-size: 2rem;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .cart-toggle {
+            position: fixed;
+            right: 20px;
+            top: 20px;
+            background: #ffd700;
+            border: none;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 999;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4444;
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Gourmet Haven</h1>
+            <p>Experience Culinary Excellence</p>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="./menu.html">Menu</a></li>
+            <li><a href="./about.html">About</a></li>
+            <li><a href="./dinin.html">Reservation</a></li>
+        </ul>
+    </nav>
+    <h2 class="section-title">DISH OF THE DAY </h2>
+    
+
+    <button class="cart-toggle" onclick="toggleCart()">
+        🛒
+        <span class="cart-count">0</span>
+    </button>
+
+    <div class="cart">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <button class="close-cart" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-items"></div>
+        <div class="cart-total">
+            <h3>Total: $<span id="cartTotal">0</span></h3>
+            <button class="add-to-cart" onclick="placeOrder()" style="width: 100%; margin-top: 1rem;">
+                Place Order
+            </button>
+        </div>
+    </div>
+
+    <div class="popup-overlay">
+        <div class="popup">
+            <div class="success-icon">✓</div>
+            <h2>Order Placed Successfully!</h2>
+            <p>Thank you for your order. We'll prepare it right away!</p>
+            <button class="add-to-cart" onclick="closePopup()" style="margin-top: 1rem;">
+                Continue Shopping
+            </button>
+        </div>
+    </div>
+
+    <div class="menu-grid" id="menu">
+        <!-- Menu items will be added here by JavaScript -->
+    </div>
+
+    <script>
+        const menuItems = [
+            {
+                id: 1,
+                name: 'Grilled Salmon',
+                description: 'Fresh Atlantic salmon with lemon butter sauce',
+                price: 24.99,
+                image: 'grill.jpg.jpg'
+            },
+            {
+                id: 2,
+                name: 'Beef Tenderloin',
+                description: 'Premium cut with red wine reduction',
+                price: 29.99,
+                image: 'beef.jpg'
+            },
+            {
+                id: 3,
+                name: 'Mushroom Risotto',
+                description: 'Creamy Arborio rice with wild mushrooms',
+                price: 18.99,
+                image: 'mushroom.jpg'
+            },
+            {
+                id: 4,
+                name: 'Chocolate Lava Cake',
+                description: 'Warm chocolate cake with molten center',
+                price: 9.99,
+                image: 'choclate lava.jpg'
+            }
+        ];
+
+        let cart = [];
+
+        function initializeMenu() {
+            const menuGrid = document.querySelector('.menu-grid');
+            menuItems.forEach(item => {
+                const menuItem = document.createElement('div');
+                menuItem.className = 'menu-item';
+                menuItem.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="menu-item-content">
+                        <h3>${item.name}</h3>
+                        <p>${item.description}</p>
+                        <div class="price">$${item.price.toFixed(2)}</div>
+                        <button class="add-to-cart" onclick="addToCart(${item.id})">
+                            Add to Cart
+                        </button>
+                    </div>
+                `;
+                menuGrid.appendChild(menuItem);
+            });
+        }
+
+        function toggleCart() {
+            document.querySelector('.cart').classList.toggle('open');
+        }
+
+        function addToCart(itemId) {
+            const item = menuItems.find(item => item.id === itemId);
+            cart.push(item);
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.querySelector('.cart-items');
+            const cartCount = document.querySelector('.cart-count');
+            let total = 0;
+
+            cartItems.innerHTML = '';
+            cart.forEach((item, index) => {
+                const cartItem = document.createElement('div');
+                cartItem.className = 'cart-item';
+                cartItem.innerHTML = `
+                    <div>
+                        <h4>${item.name}</h4>
+                        <div class="price">$${item.price.toFixed(2)}</div>
+                    </div>
+                    <button class="add-to-cart" onclick="removeFromCart(${index})">
+                        Remove
+                    </button>
+                `;
+                cartItems.appendChild(cartItem);
+                total += item.price;
+            });
+
+            document.getElementById('cartTotal').textContent = total.toFixed(2);
+            cartCount.textContent = cart.length;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCart();
+        }
+
+        function placeOrder() {
+            if (cart.length === 0) {
+                alert('Please add items to your cart first');
+                return;
+            }
+            document.querySelector('.popup-overlay').style.display = 'flex';
+        }
+
+        function closePopup() {
+            document.querySelector('.popup-overlay').style.display = 'none';
+            cart = [];
+            updateCart();
+            toggleCart();
+        }
+
+        initializeMenu();
+    </script>
+</body>
+</html>

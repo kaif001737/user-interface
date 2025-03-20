@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I-MAX School Application Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .photo-box {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 120px;
+            height: 150px;
+            border: 1px solid #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .photo-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .photo-box label {
+            cursor: pointer;
+            padding: 5px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .photo-box input[type="file"] {
+            display: none;
+        }
+
+        .section-title {
+            background-color: #f8f9fa;
+            padding: 8px;
+            margin: 20px 0;
+            border: 1px solid #000;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .form-group label {
+            min-width: 200px;
+            margin-right: 10px;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            flex: 1;
+            padding: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .siblings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .siblings-table th, 
+        .siblings-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .declaration {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #000;
+        }
+
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .signature-block {
+            width: 45%;
+        }
+
+        .inline-input {
+            display: inline-block;
+            width: auto;
+            margin: 0 10px;
+        }
+
+        .address-input {
+            width: 100%;
+            resize: vertical;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="schoolApplicationForm">
+            <div class="header">
+                <h2>Academic Year 20__ -20__</h2>
+                <p>(FORM SHOULD BE FILLED CLEARLY AND COMPLETELY IN BLOCK LETTERS BY PARENTS)</p>
+                <h3>Royapettah/Washermenpet</h3>
+                <div class="photo-box">
+                    <img id="photoPreview" alt="Student Photo">
+                    <label for="photoUpload">
+                        Click to Upload<br>Passport Size<br>Colour<br>Photograph
+                    </label>
+                    <input type="file" id="photoUpload" accept="image/*" required>
+                </div>
+            </div>
+
+            <div class="section-title">STUDENT'S PARTICULARS</div>
+            
+            <div class="form-group">
+                <label>1. Name of the student</label>
+                <input type="text" required>
+            </div>
+
+            <div class="form-group">
+                <label>2. Gender</label>
+                <select required>
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>3. Date of birth</label>
+                <input type="date" required>
+            </div>
+
+            <div class="form-group">
+                <label>4. Age as on 31st Aug 20__</label>
+                <input type="number" placeholder="Years" class="inline-input" style="width: 80px" required>
+                <input type="number" placeholder="Months" class="inline-input" style="width: 80px" required>
+            </div>
+
+            <div class="form-group">
+                <label>5. Place of birth</label>
+                <input type="text" required>
+            </div>
+
+            <div class="form-group">
+                <label>6. State</label>
+                <input type="text" required>
+            </div>
+
+            <div class="form-group">
+                <label>7. Nationality</label>
+                <input type="text" required>
+            </div>
+
+            <div class="form-group">
+                <label>8. Religion</label>
+                <input type="text" required>
+                <label style="min-width: auto; margin-left: 10px;">Reverted to Islam (if applicable):</label>
+                <select style="width: 120px">
+                    <option value="">Select</option>
+                    <option value="father">Father</option>
+                    <option value="mother">Mother</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>9. Blood Group</label>
+                <input type="text" required>
+            </div>
+
+            <div class="form-group">
+                <label>10. Mother tongue</label>
+                <input type="text" required>
+            </div>
+
+            <div class="form-group">
+                <label>11. Application for class</label>
+                <input type="text" required>
+            </div>
+
+            <div class="form-group">
+                <label>12. Particulars of last school attended (if any)</label>
+                <div style="flex: 1;">
+                    <input type="text" placeholder="Name and address of school" style="width: 100%; margin-bottom: 10px">
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" placeholder="Last class attended">
+                        <input type="text" placeholder="Medium of instruction">
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <input type="text" placeholder="EMIS No">
+                        <input type="text" placeholder="Aadhaar ID No">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>13. Physically challenged / Major Illness</label>
+                <input type="text" placeholder="If yes, give details">
+            </div>
+
+            <div class="section-title">FAMILY PARTICULARS</div>
+
+            <!-- Similar structure continues for family particulars, declaration, etc. -->
+
+            <button type="submit" style="margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Submit Application
+            </button>
+        </form>
+    </div>
+    
+
+    <script>
+        // Photo upload handling
+        const photoUpload = document.getElementById('photoUpload');
+        const photoPreview = document.getElementById('photoPreview');
+        const photoLabel = photoUpload.previousElementSibling;
+
+        photoUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoPreview.src = e.target.result;
+                    photoPreview.style.display = 'block';
+                    photoLabel.style.display = 'none';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Form submission
+        document.getElementById('schoolApplicationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate photo upload
+            if (!photoUpload.files[0]) {
+                alert('Please upload a passport size photograph');
+                return;
+            }
+
+            // Create FormData object to handle form submission with file
+            const formData = new FormData(this);
+            formData.append('photo', photoUpload.files[0]);
+
+            // Here you would typically send the formData to a server
+            console.log('Form submitted with photo');
+            alert('Application submitted successfully!');
+        });
+    </script>
+</body>
+</html>

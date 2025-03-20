@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I-MAX School Application Form</title>
+    <!-- Add jsPDF library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* Previous styles remain the same */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* ... (keep all previous styles) ... */
+
+        /* Add new styles for the download button */
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .download-button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .download-button:hover {
+            background-color: #218838;
+        }
+
+        /* Add print-specific styles */
+        @media print {
+            .no-print {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+                padding: 0;
+            }
+            body {
+                background: white;
+                padding: 0;
+            }
+        }
+
+        /* Keep all other previous styles */
+    </style>
+</head>
+<body>
+    <div class="container" id="formContainer">
+        <!-- Previous form content remains the same until the buttons -->
+        
+        <!-- Add button group at the bottom -->
+        <div class="button-group no-print">
+            <button type="submit" form="schoolApplicationForm">Submit Application</button>
+            <button type="button" class="download-button" id="downloadBtn">Download Application</button>
+        </div>
+    </div>
+
+    <script>
+        // Previous JavaScript code remains the same
+
+        // Add download functionality
+        window.jsPDF = window.jspdf.jsPDF;
+
+        document.getElementById('downloadBtn').addEventListener('click', async function() {
+            // Validate form first
+            const form = document.getElementById('schoolApplicationForm');
+            if (!form.checkValidity()) {
+                alert('Please fill all required fields before downloading');
+                return;
+            }
+
+            // Prepare the form for PDF generation
+            const formContainer = document.getElementById('formContainer');
+            
+            // Create PDF
+            try {
+                // Get form dimensions
+                const formWidth = formContainer.offsetWidth;
+                const formHeight = formContainer.offsetHeight;
+                
+                // Create PDF with appropriate dimensions
+                const pdf = new jsPDF('p', 'px', [formWidth, formHeight]);
+
+                // Generate canvas from form
+                const canvas = await html2canvas(formContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    removeContainer: true
+                });
+
+                // Add image to PDF
+                const imgData = canvas.toDataURL('image/png');
+                pdf.addImage(imgData, 'PNG', 0, 0, formWidth, formHeight);
+
+                // Generate filename with student name and date
+                const studentName = document.getElementById('studentName').value;
+                const date = new Date().toISOString().split('T')[0];
+                const filename = `${studentName}_Application_${date}.pdf`;
+
+                // Download PDF
+                pdf.save(filename);
+
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again.');
+            }
+        });
+
+        // Previous form submission code
+        document.getElementById('schoolApplicationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Basic validation
+            const requiredFields = [
+                'studentName', 'gender', 'dob', 'birthPlace', 'state', 'nationality',
+                'religion', 'bloodGroup', 'motherTongue', 'fatherName', 'fatherMobile',
+                'fatherEmail', 'motherName', 'motherMobile', 'motherEmail', 'residentialAddress'
+            ];
+
+            let isValid = true;
+            let formData = {};
+
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    isValid = false;
+                    element.style.borderColor = 'red';
+                } else {
+                    element.style.borderColor = '#ccc';
+                    formData[field] = element.value;
+                }
+            });
+
+            // Email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            ['fatherEmail', 'motherEmail'].forEach(field => {
+                const element = document.getElementById(field);
+                if (!emailRegex.test(element.value)) {
+                    isValid = false;
+                    element.style.borderColor = 'red';
+                }
+            });
+
+            // Phone validation
+            const phoneRegex = /^\d{10}$/;
+            ['fatherMobile', 'motherMobile'].forEach(field => {
+                const element = document.getElementById(field);
+                if (!phoneRegex.test(element.value)) {
+                    isValid = false;
+                    element.style.borderColor = 'red';
+                }
+            });
+
+            if (isValid) {
+                // Add siblings data
+                formData.siblings = [];
+                for (let i = 1; i <= 3; i++) {
+                    const name = document.getElementById(`sibling${i}Name`).value;
+                    const std = document.getElementById(`sibling${i}Std`).value;
+                    if (name && std) {
+                        formData.siblings.push({ name, std });
+                    }
+                }
+
+                // Here you would typically send the data to a server
+                console.log('Form submitted successfully:', formData);
+                alert('Application submitted successfully!');
+            } else {
+                alert('Please fill all required fields correctly');
+            }
+        });
+
+        // Keep the age calculation code
+        document.getElementById('dob').addEventListener('change', function() {
+            const dob = new Date(this.value);
+            const today = new Date();
+            const referenceDate = new Date(today.getFullYear(), 7, 31);
+            
+            let years = referenceDate.getFullYear() - dob.getFullYear();
+            let months = referenceDate.getMonth() - dob.getMonth();
+            
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+            
+            document.getElementById('age').value = years;
+            document.getElementById('ageMonths').value = months;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gourmet Haven - Menu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1c20 0%, #2d3436 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .menu-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        .category {
+            margin-bottom: 3rem;
+        }
+
+        .category-title {
+            color: #ffd700;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 0.5rem;
+        }
+
+        .dishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .dish-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        .dish-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .dish-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .dish-info {
+            padding: 1.5rem;
+        }
+
+        .dish-name {
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+        }
+
+        .dish-description {
+            color: #ddd;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .dish-price {
+            color: #ffd700;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .dietary-info {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-top: 0.5rem;
+        }
+
+        .cart-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            min-width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .cart-title {
+            color: #ffd700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-items {
+            margin-bottom: 1rem;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cart-total {
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin: 1rem 0;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .btn-add {
+            background-color: #ffd700;
+            color: #000;
+            width: 100%;
+        }
+
+        .btn-add:hover {
+            background-color: #ffed4a;
+        }
+
+        .btn-order {
+            background-color: #4CAF50;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-order:hover {
+            background-color: #45a049;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #2d3436;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .modal-title {
+            color: #ffd700;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .dishes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .cart-container {
+                position: static;
+                margin: 1rem auto;
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-container">
+        <h1>Our Menu</h1>
+        <div id="menu-content"></div>
+    </div>
+
+    <div class="cart-container">
+        <div class="cart-title">
+            <span>Your Cart</span>
+            <span id="cart-count">(0)</span>
+        </div>
+        <div class="cart-items" id="cart-items"></div>
+        <div class="cart-total">Total: $<span id="cart-total">0</span></div>
+        <button class="btn btn-order" onclick="placeOrder()">Place Order</button>
+    </div>
+
+    <div class="modal" id="success-modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 class="modal-title">Success!</h2>
+            <p>Your order has been placed successfully.</p>
+            <button class="btn btn-add" onclick="closeModal()" style="margin-top: 1rem;">OK</button>
+        </div>
+    </div>
+
+    <script>
+        const menuData = {
+            categories: [
+                {
+                    title: "Appetizers",
+                    dishes: [
+                        {
+                            name: "Classic Bruschetta",
+                            description: "Toasted baguette slices topped with fresh tomatoes, basil, and garlic",
+                            price: "12",
+                            dietary: "Vegetarian",
+                            image: "appiti.jpg"
+                        },
+                        {
+                            name: "Crispy Calamari",
+                            description: "Lightly fried squid served with lemon aioli",
+                            price: "16",
+                            image: "octopus.jpg"
+                        },
+                        {
+                            name: "Vegetable Spring Rolls",
+                            description: "Crispy rolls filled with fresh vegetables and served with sweet chili sauce",
+                            price: "14",
+                            dietary: "Vegetarian",
+                            image: "spring roll.jpg"
+                        }
+                        
+                    ]
+                },
+                {
+                    title: "Main Courses",
+                    dishes: [
+                        {
+                            name: "Grilled Ribeye Steak",
+                            description: "12oz prime ribeye with roasted vegetables and red wine sauce",
+                            price: "$42",
+                            image: "grilled beef.jpg"
+                        },
+                        {
+                            name: "Pan-Seared Salmon",
+                            description: "Fresh Atlantic salmon with quinoa and lemon butter sauce",
+                            price: "$32",
+                            dietary: "Gluten-Free",
+                            image: "salmon.jpg"
+                        },
+                        {
+                            name: "Wild Mushroom Risotto",
+                            description: "Creamy Arborio rice with assorted wild mushrooms and parmesan",
+                            price: "$26",
+                            dietary: "Vegetarian",
+                            image: "mushroom1 (1).jpg"
+                        }
+                    ]
+                },{
+                    title: "Pasta",
+                    dishes: [
+                        {
+                            name: "Classic Carbonara",
+                            description: "Spaghetti with pancetta, egg, pecorino romano, and black pepper",
+                            price: "$24",
+                            image: "ramen.jpg"
+                        },
+                        {
+                            name: "Penne Arrabbiata",
+                            description: "Spicy tomato sauce with garlic and fresh basil",
+                            price: "$20",
+                            dietary: "Vegetarian",
+                            image: "pasta.jpg"
+                        },
+                        {
+                            name: "Lobster Ravioli",
+                            description: "Handmade ravioli filled with lobster in a saffron cream sauce",
+                            price: "$34",
+                            image: "lobster.jpg"
+                        }
+                    ]
+                },
+                {
+                    title: "Seafood",
+                    dishes: [
+                        {
+                            name: "Chilean Sea Bass",
+                            description: "Miso-glazed sea bass with baby bok choy",
+                            price: "$38",
+                            dietary: "Gluten-Free",
+                            image: "sea bass.jpg"
+                        },
+                        {
+                            name: "Garlic Shrimp Scampi",
+                            description: "Jumbo shrimp in white wine garlic sauce with linguine",
+                            price: "$28",
+                            image: "shrimp.jpg"
+                        },
+                        {
+                            name: "Grilled Octopus",
+                            description: "Tender octopus with fingerling potatoes and chimichurri",
+                            price: "$36",
+                            image: "grill octo.jpg"
+                        }
+                    ]
+                },
+                {
+                    title: "Desserts",
+                    dishes: [
+                        {
+                            name: "Classic Tiramisu",
+                            description: "Coffee-soaked ladyfingers with mascarpone cream",
+                            price: "$12",
+                            image: "cake.jpg"
+                        },
+                        {
+                            name: "Vanilla Crème Brûlée",
+                            description: "Rich custard topped with caramelized sugar",
+                            price: "$14",
+                            dietary: "Gluten-Free",
+                            image: "ice.jpg"
+                        },
+                        {
+                            name: "Molten Chocolate Cake",
+                            description: "Warm chocolate cake with vanilla ice cream",
+                            price: "$16",
+                            image: "choclate.jpg"
+                        }
+                    ]
+                }
+            ]
+        };
+                // ... (rest of the menu data remains the same)
+            
+
+        let cart = [];
+
+        function renderMenu() {
+            const menuContent = document.getElementById('menu-content');
+            
+            menuData.categories.forEach(category => {
+                const categorySection = document.createElement('section');
+                categorySection.className = 'category';
+                
+                categorySection.innerHTML = `
+                    <h2 class="category-title">${category.title}</h2>
+                    <div class="dishes-grid">
+                        ${category.dishes.map(dish => `
+                            <div class="dish-card">
+                                <img src="${dish.image}" alt="${dish.name}" class="dish-image">
+                                <div class="dish-info">
+                                    <h3 class="dish-name">${dish.name}</h3>
+                                    <p class="dish-description">${dish.description}</p>
+                                    <div class="dish-price">$${dish.price}</div>
+                                    ${dish.dietary ? `<div class="dietary-info">${dish.dietary}</div>` : ''}
+                                    <button class="btn btn-add" onclick='addToCart(${JSON.stringify(dish)})'>
+                                        Add to Cart
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                menuContent.appendChild(categorySection);
+            });
+        }
+
+        function addToCart(dish) {
+            const existingItem = cart.find(item => item.name === dish.name);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    ...dish,
+                    quantity: 1
+                });
+            }
+            
+            updateCart();
+        }
+
+        function removeFromCart(dishName) {
+            cart = cart.filter(item => item.name !== dishName);
+            updateCart();
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cart-items');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotal = document.getElementById('cart-total');
+            
+            cartItems.innerHTML = cart.map(item => `
+                <div class="cart-item">
+                    <div>
+                        ${item.name} x${item.quantity}
+                        <span style="color: #ffd700">($${(item.price * item.quantity).toFixed(2)})</span>
+                    </div>
+                    <button class="btn" onclick='removeFromCart("${item.name}")'>✕</button>
+                </div>
+            `).join('');
+            
+            cartCount.textContent = `(${cart.reduce((sum, item) => sum + item.quantity, 0)})`;
+            cartTotal.textContent = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2);
+        }
+
+        function placeOrder() {
+            if (cart.length === 0) {
+                alert('Please add items to your cart first.');
+                return;
+            }
+            
+            const modal = document.getElementById('success-modal');
+            modal.style.display = 'flex';
+            
+            // Clear cart after order
+            cart = [];
+            updateCart();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('success-modal');
+            modal.style.display = 'none';
+        }
+
+        // Initialize the menu when the page loads
+        document.addEventListener('DOMContentLoaded', renderMenu);
+    </script>
+</body>
+</html>
